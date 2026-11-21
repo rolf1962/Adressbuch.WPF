@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Adressbuch.WPF.DataAccess.Test/Adressbuch.WPF.DataAccess.Test.csproj" Id="4e4a9e52-610b-4024-bb3e-02a4c11585cb" />
+  <Project Path="Adressbuch.WPF.DataAccess/Adressbuch.WPF.DataAccess.csproj" />
+  <Project Path="Adressbuch.WPF.Model/Adressbuch.WPF.Model.csproj" />
+  <Project Path="Adressbuch.WPF.View/Adressbuch.WPF.View.csproj" />
+  <Project Path="Adressbuch.WPF.ViewModel/Adressbuch.WPF.ViewModel.csproj" />
+</Solution>
