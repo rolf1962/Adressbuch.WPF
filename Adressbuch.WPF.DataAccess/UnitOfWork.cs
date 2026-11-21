@@ -4,21 +4,22 @@ namespace Adressbuch.WPF.DataAccess
 {
     public class UnitOfWork : IDisposable
     {
-        private AdressbuchDbContext _context = new AdressbuchDbContext();
-        private GenericRepository<Person>? _PersonRepository;
+        private AdressbuchDbContext _context;
+        private GenericRepository<Person> _personRepository;
+        private GenericRepository<Adresse> _adresseRepository;
+        private GenericRepository<Erreichbarkeit> _erreichbarkeitRepository;
 
-        public GenericRepository<Person> PersonRepository
+        public UnitOfWork(AdressbuchDbContext dbContext)
         {
-            get
-            {
-
-                if (_PersonRepository == null)
-                {
-                    _PersonRepository = new GenericRepository<Person>(_context);
-                }
-                return _PersonRepository;
-            }
+            _context = dbContext;
+            _personRepository = new GenericRepository<Person>(_context);
+            _adresseRepository = new GenericRepository<Adresse>(_context);
+            _erreichbarkeitRepository = new GenericRepository<Erreichbarkeit>(_context);
         }
+
+        public GenericRepository<Person> PersonRepository => _personRepository;
+        public GenericRepository<Adresse> AdresseRepository => _adresseRepository;
+        public GenericRepository<Erreichbarkeit> ErreichbarkeitRepository => _erreichbarkeitRepository;
 
         public void Save()
         {
