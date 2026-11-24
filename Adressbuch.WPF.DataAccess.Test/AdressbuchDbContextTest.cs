@@ -1,5 +1,6 @@
 ﻿using System.Xml.Serialization;
 using Adressbuch.WPF.DataAccess;
+using Adressbuch.WPF.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Adressbuch.WPF.DataAccess.Test
@@ -24,6 +25,14 @@ namespace Adressbuch.WPF.DataAccess.Test
 
             // Überprüfen. dass es den DbContext gibt
             Assert.That(dbContext, Is.Not.Null);
+
+            UnitOfWork unitOfWork = new UnitOfWork(dbContext);
+            List<Person> personen = unitOfWork.PersonRepository.GetAll(
+                null, //predicate: o => o.Nachname == "Max Mustermann",
+                person => person.Adressen, person => person.Erreichbarkeiten);
+
+            Assert.That(personen,Is.Not.Null);
         }
+
     }
 }

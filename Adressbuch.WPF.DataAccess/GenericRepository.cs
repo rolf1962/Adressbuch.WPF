@@ -1,80 +1,59 @@
-﻿using System.Data;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
-namespace Adressbuch.WPF.DataAccess
+public interface IGenericRepository<T> where T : class
 {
-    public class GenericRepository<TEntity> where TEntity : class
+    T? GetById(
+        int id,
+        params Expression<Func<T, object>>[] includes);
+
+    List<T> GetAll(
+        Expression<Func<T, bool>>? predicate = null,
+        params Expression<Func<T, object>>[] includes);
+}
+
+public class GenericRepository<T> : IGenericRepository<T> where T : class
+{
+    private readonly DbContext _context;
+    private readonly DbSet<T> _dbSet;
+
+    public GenericRepository(DbContext context)
     {
-        internal AdressbuchDbContext _context;
-        internal DbSet<TEntity> _dbSet;
+        _context = context;
+        _dbSet = context.Set<T>();
+    }
 
-        public GenericRepository(AdressbuchDbContext context)
+    public T? GetById(
+        int id,
+        params Expression<Func<T, object>>[] includes)
+    {
+        IQueryable<T> query = ApplyIncludes(_dbSet, includes);
+        return query.FirstOrDefault(e => EF.Property<int>(e, "Id") == id);
+    }
+
+    public List<T> GetAll(
+        Expression<Func<T, bool>>? predicate = null,
+        params Expression<Func<T, object>>[] includes)
+    {
+        IQueryable<T> query = ApplyIncludes(_dbSet, includes);
+
+        if (predicate is not null)
         {
-            _context = context;
-            _dbSet = context.Set<TEntity>();
+            query = query.Where(predicate);
         }
 
-        public virtual IEnumerable<TEntity> Get(
-            Expression<Func<TEntity, bool>>? filter = null,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-            string includeProperties = "")
+        return query.ToList();
+    }
+
+    private static IQueryable<T> ApplyIncludes(
+        IQueryable<T> query,
+        Expression<Func<T, object>>[] includes)
+    {
+        foreach (var include in includes)
         {
-            IQueryable<TEntity> query = _dbSet;
-
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-
-            foreach (var includeProperty in includeProperties.Split
-                (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                query = query.Include(includeProperty);
-            }
-
-            if (orderBy != null)
-            {
-                return orderBy(query).ToList();
-            }
-            else
-            {
-                return query.ToList();
-            }
+            query = query.Include(include);
         }
 
-        public virtual TEntity? GetByID(object id)
-        {
-            return _dbSet.Find(id);
-        }
-
-        public virtual void Insert(TEntity entity)
-        {
-            _dbSet.Add(entity);
-        }
-
-        public virtual void Delete(object id)
-        {
-            TEntity? entityToDelete = _dbSet.Find(id);
-            if (null != entityToDelete)
-            {
-                Delete(entityToDelete);
-            }
-        }
-
-        public virtual void Delete(TEntity entityToDelete)
-        {
-            if (_context.Entry(entityToDelete).State == EntityState.Detached)
-            {
-                _dbSet.Attach(entityToDelete);
-            }
-            _dbSet.Remove(entityToDelete);
-        }
-
-        public virtual void Update(TEntity entityToUpdate)
-        {
-            _dbSet.Attach(entityToUpdate);
-            _context.Entry(entityToUpdate).State = EntityState.Modified;
-        }
+        return query;
     }
 }
