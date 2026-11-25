@@ -5,16 +5,16 @@ namespace Adressbuch.WPF.DataAccess
     public class UnitOfWork : IDisposable
     {
         private AdressbuchDbContext _context;
-        private GenericRepository<Person> _personRepository;
-        private GenericRepository<Adresse> _adresseRepository;
-        private GenericRepository<Erreichbarkeit> _erreichbarkeitRepository;
+        private GenericRepositoryModelBase<Person> _personRepository;
+        private GenericRepositoryModelBase<Adresse> _adresseRepository;
+        private GenericRepositoryModelBase<Erreichbarkeit> _erreichbarkeitRepository;
 
         public UnitOfWork(AdressbuchDbContext dbContext)
         {
             _context = dbContext;
-            _personRepository = new GenericRepository<Person>(_context);
-            _adresseRepository = new GenericRepository<Adresse>(_context);
-            _erreichbarkeitRepository = new GenericRepository<Erreichbarkeit>(_context);
+            _personRepository = new GenericRepositoryModelBase<Person>(_context);
+            _adresseRepository = new GenericRepositoryModelBase<Adresse>(_context);
+            _erreichbarkeitRepository = new GenericRepositoryModelBase<Erreichbarkeit>(_context);
         }
 
         public GenericRepository<Person> PersonRepository => _personRepository;

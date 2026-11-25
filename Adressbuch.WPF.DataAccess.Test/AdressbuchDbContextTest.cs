@@ -26,13 +26,32 @@ namespace Adressbuch.WPF.DataAccess.Test
             // Überprüfen. dass es den DbContext gibt
             Assert.That(dbContext, Is.Not.Null);
 
+        }
+
+        [Test]
+        public void TestPersonRepository()
+        {
+            AdressbuchDbContext dbContext = new AdressbuchDbContext();
             UnitOfWork unitOfWork = new UnitOfWork(dbContext);
+
             List<Person> personen = unitOfWork.PersonRepository.GetAll(
                 null, //predicate: o => o.Nachname == "Max Mustermann",
                 person => person.Adressen, person => person.Erreichbarkeiten);
 
-            Assert.That(personen,Is.Not.Null);
-        }
+            Assert.That(personen, Is.Not.Null);
 
+            // Neue Person einfügen
+            Person person = new Person() { Nachname = "Testmann", Vornamen = "Manfred", Geburtsdatum = new DateTime(2000, 2, 28) };
+
+            unitOfWork.PersonRepository.Insert(person);
+            unitOfWork.PersonRepository.SaveChanges();
+
+            person.Bemerkungen = "Da gibt es viel zu erzählen - ein ander Mal.";
+            unitOfWork.PersonRepository.Update(person);
+            unitOfWork.PersonRepository.SaveChanges();
+
+            unitOfWork.PersonRepository.Delete(person);
+            unitOfWork.PersonRepository.SaveChanges();
+        }
     }
 }
