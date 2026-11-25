@@ -19,7 +19,5 @@ namespace Adressbuch.WPF.DataAccess
         public void Delete(T entityToDelete);
 
         public void Update(T entityToUpdate);
-
-        public void SaveChanges();
     }
 }

@@ -65,11 +65,6 @@ namespace Adressbuch.WPF.DataAccess
             _context.Entry(entityToUpdate).State = EntityState.Modified;
         }
 
-        public virtual void SaveChanges()
-        {
-            _context.SaveChanges();
-        }
-
         private static IQueryable<T> ApplyIncludes(
             IQueryable<T> query,
             Expression<Func<T, object>>[] includes)

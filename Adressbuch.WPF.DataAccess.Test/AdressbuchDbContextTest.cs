@@ -1,6 +1,4 @@
-﻿using System.Xml.Serialization;
-using Adressbuch.WPF.DataAccess;
-using Adressbuch.WPF.Model;
+﻿using Adressbuch.WPF.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Adressbuch.WPF.DataAccess.Test
@@ -35,7 +33,7 @@ namespace Adressbuch.WPF.DataAccess.Test
             UnitOfWork unitOfWork = new UnitOfWork(dbContext);
 
             List<Person> personen = unitOfWork.PersonRepository.GetAll(
-                null, //predicate: o => o.Nachname == "Max Mustermann",
+                predicate: p => p.Nachname == "Jansen",
                 person => person.Adressen, person => person.Erreichbarkeiten);
 
             Assert.That(personen, Is.Not.Null);
@@ -44,14 +42,14 @@ namespace Adressbuch.WPF.DataAccess.Test
             Person person = new Person() { Nachname = "Testmann", Vornamen = "Manfred", Geburtsdatum = new DateTime(2000, 2, 28) };
 
             unitOfWork.PersonRepository.Insert(person);
-            unitOfWork.PersonRepository.SaveChanges();
-
-            person.Bemerkungen = "Da gibt es viel zu erzählen - ein ander Mal.";
+            unitOfWork.Save();
+            
+            person.Bemerkungen = "Da gibt es viel zu erzählen - ein anderes Mal.";
             unitOfWork.PersonRepository.Update(person);
-            unitOfWork.PersonRepository.SaveChanges();
+            unitOfWork.Save();
 
             unitOfWork.PersonRepository.Delete(person);
-            unitOfWork.PersonRepository.SaveChanges();
+            unitOfWork.Save();
         }
     }
 }

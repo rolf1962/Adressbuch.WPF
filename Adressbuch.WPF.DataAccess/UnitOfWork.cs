@@ -1,4 +1,5 @@
 ﻿using Adressbuch.WPF.Model;
+using System.Security.Principal;
 
 namespace Adressbuch.WPF.DataAccess
 {
@@ -11,15 +12,19 @@ namespace Adressbuch.WPF.DataAccess
 
         public UnitOfWork(AdressbuchDbContext dbContext)
         {
+#pragma warning disable CA1416 // Plattformkompatibilität überprüfen
+            string userName = WindowsIdentity.GetCurrent().Name;
+#pragma warning restore CA1416 // Plattformkompatibilität überprüfen
+
             _context = dbContext;
-            _personRepository = new GenericRepositoryModelBase<Person>(_context);
-            _adresseRepository = new GenericRepositoryModelBase<Adresse>(_context);
-            _erreichbarkeitRepository = new GenericRepositoryModelBase<Erreichbarkeit>(_context);
+            _personRepository = new GenericRepositoryModelBase<Person>(_context, userName);
+            _adresseRepository = new GenericRepositoryModelBase<Adresse>(_context, userName);
+            _erreichbarkeitRepository = new GenericRepositoryModelBase<Erreichbarkeit>(_context, userName);
         }
 
-        public GenericRepository<Person> PersonRepository => _personRepository;
-        public GenericRepository<Adresse> AdresseRepository => _adresseRepository;
-        public GenericRepository<Erreichbarkeit> ErreichbarkeitRepository => _erreichbarkeitRepository;
+        public GenericRepositoryModelBase<Person> PersonRepository => _personRepository;
+        public GenericRepositoryModelBase<Adresse> AdresseRepository => _adresseRepository;
+        public GenericRepositoryModelBase<Erreichbarkeit> ErreichbarkeitRepository => _erreichbarkeitRepository;
 
         public void Save()
         {
